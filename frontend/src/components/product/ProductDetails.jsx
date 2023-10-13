@@ -7,6 +7,7 @@ import StarRatings from "react-star-ratings";
 import { useDispatch } from "react-redux";
 import { setCartItem } from "../../redux/features/cartSlice";
 import MetaData from "../layout/MetaData";
+import AddToCartButton from "./AddToCartButton";
 
 const ProductDetails = () => {
   const params = useParams();
@@ -139,16 +140,7 @@ const ProductDetails = () => {
               +
             </span>
           </div>
-          <button
-            type="button"
-            id="cart_btn"
-            className="btn btn-primary d-inline ms-4"
-            disabled={product.stock <= 0}
-            onClick={setItemToCart}
-          >
-            Add to Cart
-          </button>
-
+          <AddToCartButton id="cart_btn" product={product} />
           <hr />
 
           <p>

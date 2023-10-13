@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import StarRatings from "react-star-ratings";
+import AddToCartButton from "./AddToCartButton";
 
 const ProductItem = ({ product, columnSize }) => {
   return (
@@ -34,14 +35,10 @@ const ProductItem = ({ product, columnSize }) => {
               ({product?.numOfReviews})
             </span>
           </div>
+          <div className="price-and-cart-button">
           <p className="card-text mt-2">${product?.price}</p>
-          <Link
-            to={`/product/${product?._id}`}
-            id="view_btn"
-            className="btn btn-block"
-          >
-            View Details
-          </Link>
+          <AddToCartButton product={product} />
+          </div>
         </div>
       </div>
     </div>

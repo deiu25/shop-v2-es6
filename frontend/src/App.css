@@ -1,3 +1,53 @@
+:root {
+  --padding-small: 0.4rem;
+  --padding-medium: 1rem;
+  --padding-large: 1.8rem;
+  --font-size-small: 0.9rem;
+  --font-size-medium: 1rem;
+  --font-size-large: 1.4rem;
+  --font-size-extra-small: 0.9rem;
+  --margin-extra-large: 8rem;
+  --default-font-size: 1rem;
+  --default-line-height: 1.5;
+  --border-radius-small: 0.2rem;
+  --border-radius-medium: 0.5rem;
+  --border-radius-large: 1rem;
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-grey: #808080;
+  --color-darkgrey: #2e2e2e;
+  --color-lightgrey: #f5f5f5;
+  --color-nav: #232f3e;
+  --color-orange: #febd69;
+  --color-focus: #00008b;
+  --color-blue: #007bff;
+  --color-yellow: #fdcc0d;
+  --color-yellow-dark: #f8ce0b;
+  --default-font: "Amazon Ember", Arial, sans-serif;
+  --button-font: "Calibri", Arial, sans-serif;
+  --border-color-light: #e3e3e3;
+  --button-hover: #fbbd61;
+  --button-active: #eaa44f;
+  --button-disabled: #ccc;
+  --font-size-xlarge: 1.8rem;
+  --font-size-xxlarge: 2.4rem;
+  --margin-small: 0.5rem;
+  --margin-medium: 1rem;
+  --margin-large: 1.5rem;
+  --margin-xlarge: 2rem;
+  --margin-xxlarge: 3rem;
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-info: #17a2b8;
+  --color-warning: #ffc107;
+  --color-light: #f8f9fa;
+  --color-dark: #343a40;
+  --color-muted: #6c757d;
+  --padding-xsmall: 0.2rem;
+  --padding-xxlarge: 3rem;
+}
+
 html,
 body {
   font-family: "Amazon Ember";
@@ -87,21 +137,21 @@ nav {
 }
 
 .card-title a {
-  color: #2e2e2e;
+  color: var(--color-darkgrey);
+  font-size: var(--font-size-extra-small);
   text-decoration: none;
 }
 
 .card-title a:hover {
-  color: #fa9c23;
+  color: var(--color-orange);
   text-decoration: none;
 }
-
 .card-body {
   padding-left: 0;
 }
 
 .card-text {
-  font-size: 1.4rem;
+  font-size: var(--font-size-large);
 }
 
 .card-img-top {
@@ -143,6 +193,23 @@ footer {
 #product_price {
   font-size: 2rem;
   font-weight: bold;
+}
+
+.price-and-cart-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+
+.cart_btn {
+  background-image: linear-gradient(var(--color-blue), var(--color-focus));
+  color: var(--color-white);
+  border: none;
+}
+
+.cart_btn:hover {
+  background-image: linear-gradient(var(--color-focus), var(--color-blue));
 }
 
 #cart_btn,
@@ -253,6 +320,10 @@ footer {
 .order-summary-values {
   float: right;
   font-weight: bold;
+}
+
+.stockCounter {
+  margin-right: 15px;
 }
 
 .stockCounter input {
