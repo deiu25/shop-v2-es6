@@ -21,6 +21,11 @@ import Cart from "./components/cart/Cart";
 import Shipping from "./components/cart/Shipping";
 import ConfirmOrder from "./components/cart/ConfirmOrder";
 import PaymentMethod from "./components/cart/PaymentMethod";
+import { Dashboard } from "./components/admin/Dashboard";
+import { UsersList } from "./components/admin/UsersList";
+import { UpdateUser } from "./components/admin/UpdateUser";
+
+
 
 function App() {
   return (
@@ -75,6 +80,33 @@ function App() {
               }
             />
 
+<Route
+  path="/admin/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/users"
+  element={
+    <ProtectedRoute>
+      <UsersList />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/admin/user/:id"
+  element={
+    <ProtectedRoute>
+      <UpdateUser />
+    </ProtectedRoute>
+  }
+/>
+
             <Route path="/cart" element={<Cart />} />
             <Route
               path="/shipping"
@@ -92,6 +124,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            
             <Route
               path="/payment_method"
               element={

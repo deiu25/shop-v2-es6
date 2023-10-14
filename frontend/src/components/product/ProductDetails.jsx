@@ -4,14 +4,11 @@ import { useGetProductDetailsQuery } from "../../redux/api/productsApi";
 import { toast } from "react-hot-toast";
 import Loader from "../layout/Loader";
 import StarRatings from "react-star-ratings";
-import { useDispatch } from "react-redux";
-import { setCartItem } from "../../redux/features/cartSlice";
 import MetaData from "../layout/MetaData";
 import AddToCartButton from "./AddToCartButton";
 
 const ProductDetails = () => {
   const params = useParams();
-  const dispatch = useDispatch();
 
   const [quantity, setQuantity] = useState(1);
   const [activeImg, setActiveImg] = useState("");
@@ -33,7 +30,7 @@ const ProductDetails = () => {
     if (isError) {
       toast.error(error?.data?.message);
     }
-  }, [isError]);
+}, [isError, error?.data?.message]);
 
   const increseQty = () => {
     const count = document.querySelector(".count");
@@ -51,20 +48,6 @@ const ProductDetails = () => {
 
     const qty = count.valueAsNumber - 1;
     setQuantity(qty);
-  };
-
-  const setItemToCart = () => {
-    const cartItem = {
-      product: product?._id,
-      name: product?.name,
-      price: product?.price,
-      image: product?.images[0]?.url,
-      stock: product?.stock,
-      quantity,
-    };
-
-    dispatch(setCartItem(cartItem));
-    toast.success("Item added to Cart");
   };
 
   if (isLoading) return <Loader />;
@@ -86,7 +69,7 @@ const ProductDetails = () => {
           <div className="row justify-content-start mt-5">
             {product?.images?.map((img) => (
               <div className="col-2 ms-4 mt-2">
-                <a role="button">
+                <button type="button" className="btn btn-link" role="link">
                   <img
                     className={`d-block border rounded p-3 cursor-pointer ${
                       img.url === activeImg ? "border-warning" : ""
@@ -97,7 +80,7 @@ const ProductDetails = () => {
                     alt={img?.url}
                     onClick={(e) => setActiveImg(img.url)}
                   />
-                </a>
+                </button>
               </div>
             ))}
           </div>

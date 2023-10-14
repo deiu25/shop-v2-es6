@@ -5,21 +5,25 @@ import StarRatings from "react-star-ratings";
 import AddToCartButton from "./AddToCartButton";
 
 const ProductItem = ({ product, columnSize }) => {
+  const name = product?.name?.length > 86 ? `${product?.name?.substring(0, 86)}...` : product?.name;
+
   return (
     <div className={`col-sm-12 col-md-6 col-lg-${columnSize} my-3`}>
       <div className="card p-3 rounded">
-        <img
-          className="card-img-top mx-auto"
-          src={
-            product?.images[0]
-              ? product?.images[0]?.url
-              : "/images/default_product.png"
-          }
-          alt={product?.name}
-        />
+        <Link to={`/product/${product?._id}`} className="mx-auto">
+          <img
+            className="card-img-top mx-auto"
+            src={
+              product?.images[0]
+                ? product?.images[0]?.url
+                : "/images/default_product.png"
+            }
+            alt={name}
+          />
+        </Link>
         <div className="card-body ps-3 d-flex justify-content-center flex-column">
           <h5 className="card-title">
-            <Link to={`/product/${product?._id}`}>{product?.name}</Link>
+            <Link to={`/product/${product?._id}`}>{name}</Link>
           </h5>
           <div className="ratings mt-auto d-flex">
             <StarRatings
@@ -36,8 +40,8 @@ const ProductItem = ({ product, columnSize }) => {
             </span>
           </div>
           <div className="price-and-cart-button">
-          <p className="card-text mt-2">${product?.price}</p>
-          <AddToCartButton product={product} />
+            <p className="card-text mt-2">${product?.price}</p>
+            <AddToCartButton product={product} />
           </div>
         </div>
       </div>
