@@ -3,7 +3,7 @@ import Product from "../models/product.js";
 import APIFilters from "../utils/apiFilters.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
-// Create new Product   =>  /api/v1/products
+// Get All Product   =>  /api/v1/products
 export const getProducts = catchAsyncErrors(async (req, res, next) => {
   const resPerPage = 4;
   const apiFilters = new APIFilters(Product, req.query).search().filters();
@@ -19,6 +19,13 @@ export const getProducts = catchAsyncErrors(async (req, res, next) => {
     filteredProductsCount,
     products,
   });
+});
+
+// Get all products for admin => /api/v1/admin/products
+export const getAllProducts = catchAsyncErrors(async (req, res, next) => {
+  const products = await Product.find();
+
+  res.status(200).json(products);
 });
 
 // Create new Product   =>  /api/v1/admin/products

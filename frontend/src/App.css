@@ -635,3 +635,7 @@ footer {
   border-radius: 0.3rem;
   color: #fa9c23;
 }
+
+.sidebar-no-margin {
+  padding: 0 !important;
+}

@@ -7,16 +7,36 @@ export const adminApi = createApi({
     allOrders: builder.query({
       query: () => "/admin/orders",
     }),
+
     getProducts: builder.query({
       query: () => "/products",
     }),
+    getAdminProducts: builder.query({
+      query: () => "/admin/products",
+    }),
+    updateProduct: builder.mutation({
+      query: ({ productId, productData }) => ({
+        url: `/admin/product/${productId}`,
+        method: "PUT",
+        body: productData,
+      }),
+      invalidatesTags: [{ type: "Product" }],
+    }),
+    deleteProduct: builder.mutation({
+      query: (productId) => ({
+        url: `/admin/product/${productId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: [{ type: "Product" }],
+    }),
+
     allUsers: builder.query({
       query: () => "/admin/users",
-      providesTags: ['User'],
+      providesTags: ["User"],
     }),
     getUser: builder.query({
       query: (userId) => `/admin/users/${userId}`,
-      providesTags: (result, error, userId) => [{ type: 'User', id: userId }],
+      providesTags: (result, error, userId) => [{ type: "User", id: userId }],
     }),
     deleteUser: builder.mutation({
       query: (userId) => ({
@@ -30,16 +50,19 @@ export const adminApi = createApi({
         method: "PUT",
         body: userData,
       }),
-      invalidatesTags: [{ type: 'User' }],
+      invalidatesTags: [{ type: "User" }],
     }),
   }),
 });
 
 export const {
-  useAllOrdersQuery,
-  useGetProductsQuery,
-  useAllUsersQuery,
-  useGetUserQuery,
-  useDeleteUserMutation,
-  useUpdateUserMutation,
+    useAllOrdersQuery,
+    useGetProductsQuery,
+    useAllUsersQuery,
+    useGetUserQuery,
+    useDeleteUserMutation,
+    useUpdateUserMutation,
+    useGetAdminProductsQuery,
+    useUpdateProductMutation,
+    useDeleteProductMutation,
 } = adminApi;

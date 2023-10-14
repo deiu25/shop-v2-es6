@@ -3,6 +3,7 @@ import {
   createProductReview,
   deleteProduct,
   deleteReview,
+  getAllProducts,
   getProductDetails,
   getProductReviews,
   getProducts,
@@ -13,6 +14,7 @@ import { authorizeRoles, isAuthenticatedUser } from "../middlewares/auth.js";
 const router = express.Router();
 
 router.route("/products").get(getProducts);
+router.route("/admin/products").get(getAllProducts);
 router
   .route("/admin/products")
   .post(isAuthenticatedUser, authorizeRoles("admin"), newProduct);
