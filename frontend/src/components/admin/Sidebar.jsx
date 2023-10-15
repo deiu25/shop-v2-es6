@@ -18,7 +18,7 @@ export const Sidebar = () => {
                             <Link to="/admin/products"><i className='fa fa-clipboard-list'></i> All</Link>
                         </li>
                         <li>
-                            <Link to="/admin/product"><i className='fa fa-plus'></i> Create</Link>
+                            <Link to="/admin/product/new"><i className='fa fa-plus'></i> Create</Link>
                         </li>
                     </ul>
                 </li>

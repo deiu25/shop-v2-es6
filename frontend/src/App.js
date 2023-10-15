@@ -25,6 +25,7 @@ import { Dashboard } from "./components/admin/Dashboard";
 import { UsersList } from "./components/admin/UsersList";
 import { UpdateUser } from "./components/admin/UpdateUser";
 import { ProductsList } from "./components/admin/ProductsList";
+import { NewProduct } from "./components/admin/NewProduct";
 
 function App() {
   return (
@@ -111,6 +112,15 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ProductsList />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin/product/new"
+              element={
+                <ProtectedRoute>
+                  <NewProduct />
                 </ProtectedRoute>
               }
             />

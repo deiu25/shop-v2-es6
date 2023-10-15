@@ -14,6 +14,14 @@ export const adminApi = createApi({
     getAdminProducts: builder.query({
       query: () => "/admin/products",
     }),
+    newProduct: builder.mutation({
+        query: (productData) => ({
+            url: '/admin/product/new',
+            method: 'POST',
+            body: productData,
+        }),
+        invalidatesTags: [{ type: 'Product' }],
+    }),
     updateProduct: builder.mutation({
       query: ({ productId, productData }) => ({
         url: `/admin/product/${productId}`,
@@ -65,4 +73,5 @@ export const {
     useGetAdminProductsQuery,
     useUpdateProductMutation,
     useDeleteProductMutation,
+    useNewProductMutation,
 } = adminApi;

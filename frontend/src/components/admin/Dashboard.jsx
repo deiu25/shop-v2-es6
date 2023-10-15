@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import {
   useAllOrdersQuery,
   useGetProductsQuery,
@@ -113,6 +114,16 @@ export const Dashboard = () => {
                         </b>
                         <br />
                         <span className="font-size-20">Products</span>
+                        <br />
+                        <Link
+                          className=" text-white clearfix z-1"
+                          to="/admin/products"
+                        >
+                          <span className="float-left">View Details</span>
+                          <span className="float-right">
+                            <i className="fa fa-angle-right"></i>
+                          </span>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -129,6 +140,16 @@ export const Dashboard = () => {
                         <b>{users && users.users ? users.users.length : 0}</b>
                         <br />
                         <span className="font-size-20">Users</span>
+                        <br />
+                        <Link
+                          className=" text-white clearfix z-1"
+                          to="/admin/users"
+                        >
+                          <span className="float-left">View Details</span>
+                          <span className="float-right">
+                            <i className="fa fa-angle-right"></i>
+                          </span>
+                        </Link>
                       </div>
                     </div>
                   </div>

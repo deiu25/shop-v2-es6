@@ -1,19 +1,16 @@
-import { useNavigate } from 'react-router-dom'
-import { MetaData } from "../leyout/MetaData";
-import { Sidebar } from './Sidebar';
-import { toast } from 'react-toastify';
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from "react-router-dom";
+import MetaData from "../layout/MetaData";
+import { Sidebar } from "./Sidebar";
+import { toast } from "react-hot-toast";
 
-import { newProduct, clearErrors } from '../../actions/productActions';
-
-import { NEW_PRODUCT_RESET } from '../../constants/productConstants'
+import React, { useState } from "react";
+import Loader from "../layout/Loader";
+import { useNewProductMutation } from "../../redux/api/adminApi";
 
 export const NewProduct = () => {
+    const navigate = useNavigate();
 
-    const notifyError = (message) => {
-        toast.success(message);
-      };
+    const [newProduct, { isLoading }] = useNewProductMutation();
 
     const [name, setName] = useState('');
     const [price, setPrice] = useState(0);
@@ -23,7 +20,6 @@ export const NewProduct = () => {
     const [seller, setSeller] = useState('');
     const [images, setImages] = useState([]);
     const [imagesPreview, setImagesPreview] = useState([])
-
 
     const categories = [
         "Electronics",
@@ -38,37 +34,18 @@ export const NewProduct = () => {
         "Sports",
         "Outdoor",
         "Home",
-      ];
-
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-
-    const { loading, error, success } = useSelector(state => state.newProduct);
-
-    const [redirectToProducts, setRedirectToProducts] = useState(false);
-
-    useEffect(() => {
-        if (error) {
-            toast.error(error);
-            dispatch(clearErrors());
-        }
-
-        if (success) {
-            dispatch({ type: NEW_PRODUCT_RESET });
-            notifyError('Product created successfully');
-            setRedirectToProducts(true);
-        }
-    }, [dispatch, error, success, navigate]);
-
-    useEffect(() => {
-        if (redirectToProducts) {
-            navigate('/admin/products');
-        }
-    }, [redirectToProducts, navigate]);
+    ];
 
     const submitHandler = (e) => {
         e.preventDefault();
-
+      
+        if (!images || images.length === 0) {
+            toast.error('Please upload images', {
+                position: 'bottom-center',
+            });
+          return;
+        }
+      
         const formData = new FormData();
         formData.set('name', name);
         formData.set('price', price);
@@ -76,13 +53,25 @@ export const NewProduct = () => {
         formData.set('category', category);
         formData.set('stock', stock);
         formData.set('seller', seller);
-
-        images.forEach(image => {
-            formData.append('images', image)
-        })
-
-        dispatch(newProduct(formData))
-    }
+      
+        images.forEach((image) => {
+          formData.append('images', image);
+        });
+      
+        newProduct(formData)
+          .unwrap()
+          .then(() => {
+            toast.success('Product created successfully', {
+              position: 'bottom-center',
+            });
+            navigate('/admin/products');
+          })
+          .catch((error) => {
+            toast.error(error.data.message, {
+              position: 'bottom-center',
+            });
+          });
+      };
 
     const onChange = (e) => {
 
@@ -106,9 +95,13 @@ export const NewProduct = () => {
 
     }
 
+    if (isLoading) {
+        return <Loader />;
+    }
+
     return (
         <>
-            <MetaData title={'New Product'} />
+            <MetaData title={"New Product"} />
             <div className="row">
                 <div className="col-12 col-md-2">
                     <Sidebar />
@@ -117,7 +110,11 @@ export const NewProduct = () => {
                 <div className="col-12 col-md-10">
                     <>
                         <div className="wrapper my-5">
-                            <form className="shadow-lg" onSubmit={submitHandler} encType='multipart/form-data'>
+                            <form
+                                className="shadow-lg"
+                                onSubmit={submitHandler}
+                                encType="multipart/form-data"
+                            >
                                 <h1 className="mb-4">New Product</h1>
 
                                 <div className="form-group">
@@ -144,14 +141,27 @@ export const NewProduct = () => {
 
                                 <div className="form-group">
                                     <label htmlFor="description_field">Description</label>
-                                    <textarea className="form-control" id="description_field" rows="8" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
+                                    <textarea
+                                        className="form-control"
+                                        id="description_field"
+                                        rows="8"
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                    ></textarea>
                                 </div>
 
                                 <div className="form-group">
                                     <label htmlFor="category_field">Category</label>
-                                    <select className="form-control" id="category_field" value={category} onChange={(e) => setCategory(e.target.value)}>
-                                        {categories.map(category => (
-                                            <option key={category} value={category}>{category}</option>
+                                    <select
+                                        className="form-control"
+                                        id="category_field"
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                    >
+                                        {categories.map((category) => (
+                                            <option key={category} value={category}>
+                                                {category}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
@@ -166,7 +176,7 @@ export const NewProduct = () => {
                                         onChange={(e) => setStock(e.target.value)}
                                     />
                                 </div>
-                                            
+
                                 <div className="form-group">
                                     <label htmlFor="seller_field">Seller Name</label>
                                     <input
@@ -178,25 +188,32 @@ export const NewProduct = () => {
                                     />
                                 </div>
 
-                                <div className='form-group'>
+                                <div className="form-group">
                                     <label>Images</label>
 
-                                    <div className='custom-file'>
+                                    <div className="custom-file">
                                         <input
-                                            type='file'
-                                            name='product_images'
-                                            className='custom-file-input'
-                                            id='customFile'
+                                            type="file"
+                                            name="product_images"
+                                            className="custom-file-input"
+                                            id="customFile"
                                             onChange={onChange}
                                             multiple
                                         />
-                                        <label className='custom-file-label' htmlFor='customFile'>
+                                        <label className="custom-file-label" htmlFor="customFile">
                                             Choose Images
                                         </label>
                                     </div>
 
-                                    {imagesPreview.map(img => (
-                                        <img src={img} key={img} alt="Images Preview" className="mt-3 mr-2" width="55" height="52" />
+                                    {imagesPreview.map((img) => (
+                                        <img
+                                            src={img}
+                                            key={img}
+                                            alt="Images Preview"
+                                            className="mt-3 mr-2"
+                                            width="55"
+                                            height="52"
+                                        />
                                     ))}
                                 </div>
 
@@ -204,16 +221,15 @@ export const NewProduct = () => {
                                     id="login_button"
                                     type="submit"
                                     className="btn btn-block py-3"
-                                    disabled={loading ? true : false}
+                                    disabled={isLoading}
                                 >
                                     CREATE
                                 </button>
-
                             </form>
                         </div>
                     </>
                 </div>
             </div>
         </>
-    )
-}
+    );
+};

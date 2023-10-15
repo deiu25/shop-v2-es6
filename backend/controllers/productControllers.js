@@ -1,3 +1,4 @@
+import { v2 as cloudinary } from 'cloudinary'
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import Product from "../models/product.js";
 import APIFilters from "../utils/apiFilters.js";
@@ -28,16 +29,39 @@ export const getAllProducts = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json(products);
 });
 
-// Create new Product   =>  /api/v1/admin/products
-export const newProduct = catchAsyncErrors(async (req, res) => {
-  req.body.user = req.user._id;
+// Create new product   =>   /api/v1/admin/product/new
+export const newProduct = catchAsyncErrors(async (req, res, next) => {
+
+  let images = []
+  if (typeof req.body.images === 'string') {
+      images.push(req.body.images)
+  } else {
+      images = req.body.images
+  }
+
+  let imagesLinks = [];
+
+  for (let i = 0; i < images.length; i++) {
+      const result = await cloudinary.uploader.upload(images[i], {
+          folder: 'products'
+      });
+
+      imagesLinks.push({
+          public_id: result.public_id,
+          url: result.secure_url
+      })
+  }
+
+  req.body.images = imagesLinks
+  req.body.user = req.user.id;
 
   const product = await Product.create(req.body);
 
-  res.status(200).json({
-    product,
-  });
-});
+  res.status(201).json({
+      success: true,
+      product
+  })
+})
 
 // Get single product details   =>  /api/v1/products/:id
 export const getProductDetails = catchAsyncErrors(async (req, res, next) => {
