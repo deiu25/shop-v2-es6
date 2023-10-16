@@ -18,7 +18,7 @@ const ProcessOrder = () => {
   const { data } = useOrderDetailsQuery(params?.id);
   const order = data?.order || {};
 
-  const [updateOrder, { error, isSuccess }] = useUpdateOrderMutation();
+  const [updateOrder, {isLoading, error, isSuccess }] = useUpdateOrderMutation();
 
   const {
     shippingInfo,
@@ -51,6 +51,8 @@ const ProcessOrder = () => {
     const data = { status };
     updateOrder({ id, body: data });
   };
+
+  if (isLoading) return <Loader />;
 
   return (
     <AdminLayout>

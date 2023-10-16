@@ -53,7 +53,7 @@ const Invoice = () => {
             </div>
             <h1>INVOICE # {order?._id}</h1>
             <div id="company" className="clearfix">
-              <div>ShopIT</div>
+              <div>SyntaxSeeker Shop</div>
               <div>
                 455 Foggy Heights,
                 <br />
