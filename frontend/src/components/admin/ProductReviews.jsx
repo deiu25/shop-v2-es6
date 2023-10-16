@@ -1,135 +1,147 @@
-import { useNavigate } from 'react-router-dom'
-import { MetaData } from "../leyout/MetaData";
-import { Loader } from "../leyout/Loader";
-import { Sidebar } from './Sidebar';
-import { toast } from 'react-toastify';
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Table } from 'react-bootstrap';
-import { getProductReviews, deleteReview, clearErrors} from '../../actions/productActions';
-import { DELETE_REVIEW_RESET } from '../../constants/productConstants'
+import React, { useState, useEffect } from "react";
+import Loader from "../layout/Loader";
+import { toast } from "react-hot-toast";
+import { MDBDataTable } from "mdbreact";
+import MetaData from "../layout/MetaData";
 
-export const ProductReviews = () => {
+import AdminLayout from "../layout/AdminLayout";
+import {
+  useDeleteReviewMutation,
+  useLazyGetProductReviewsQuery,
+} from "../../redux/api/productsApi";
+const ProductReviews = () => {
+  const [productId, setProductId] = useState("");
 
-    const [productId, setProductId] = useState('');
+  const [getProductReviews, { data, isLoading, error }] =
+    useLazyGetProductReviewsQuery();
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const [
+    deleteReview,
+    { error: deleteError, isLoading: isDeleteLoading, isSuccess },
+  ] = useDeleteReviewMutation();
 
-    const { loading, error, reviews } = useSelector(state => state.productReviews);
-    const { error: deleteError, isDeleted } = useSelector(state => state.review)
-
-    useEffect(() => {
-        if (error) {
-            toast.error(error);
-            dispatch(clearErrors())
-        }
-
-        if (productId !== '') {
-            dispatch(getProductReviews(productId))
-        }
-
-        if (deleteError) {
-            toast.error(deleteError);
-            dispatch(clearErrors())
-        }
-
-        if (isDeleted) {
-            toast.success('Review deleted successfully');
-            navigate('/admin/reviews')
-            dispatch({ type: DELETE_REVIEW_RESET })
-        }
-
-    }, [dispatch, error, productId, deleteError, isDeleted, navigate])
-
-    const deleteReviewHandler = (id) => {
-        dispatch(deleteReview(id, productId))
+  useEffect(() => {
+    if (error) {
+      toast.error(error?.data?.message);
     }
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-        dispatch(getProductReviews(productId))
+    if (deleteError) {
+      toast.error(deleteError?.data?.message);
     }
+
+    if (isSuccess) {
+      toast.success("Review Deleted");
+    }
+  }, [error, deleteError, isSuccess]);
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    getProductReviews(productId);
+  };
+
+  const deleteReviewHandler = (id) => {
+    deleteReview({ productId, id });
+  };
+
+  const setReviews = () => {
+    const reviews = {
+      columns: [
+        {
+          label: "Review ID",
+          field: "id",
+          sort: "asc",
+        },
+        {
+          label: "Rating",
+          field: "rating",
+          sort: "asc",
+        },
+        {
+          label: "Comment",
+          field: "comment",
+          sort: "asc",
+        },
+        {
+          label: "User",
+          field: "user",
+          sort: "asc",
+        },
+        {
+          label: "Actions",
+          field: "actions",
+          sort: "asc",
+        },
+      ],
+      rows: [],
+    };
+
+    data?.reviews?.forEach((review) => {
+      reviews.rows.push({
+        id: review?._id,
+        rating: review?.rating,
+        comment: review?.comment,
+        user: review?.user?.name,
+        actions: (
+          <>
+            <button
+              className="btn btn-outline-danger ms-2"
+              onClick={() => deleteReviewHandler(review?._id)}
+              disabled={isDeleteLoading}
+            >
+              <i className="fa fa-trash"></i>
+            </button>
+          </>
+        ),
+      });
+    });
+
+    return reviews;
+  };
+
+  if (isLoading) return <Loader />;
 
   return (
-    <>
-        <MetaData title={'Product Reviews'} />
-        <div className="row">
-            <div className="col-12 col-md-2 sidebar-no-margin">
-                <Sidebar />
+    <AdminLayout>
+      <div className="row justify-content-center my-5">
+        <div className="col-6">
+          <form onSubmit={submitHandler}>
+            <div className="mb-3">
+              <label htmlFor="productId_field" className="form-label">
+                Enter Product ID
+              </label>
+              <input
+                type="text"
+                id="productId_field"
+                className="form-control"
+                value={productId}
+                onChange={(e) => setProductId(e.target.value)}
+              />
             </div>
 
-            <div className="col-12 col-md-10">
-                <>
-                    <h1 className="my-5">Product Reviews</h1>
-
-                    <div className="row d-flex justify-content-center align-items-center flex-column">
-                        <div className="col-12 col-md-5 mb-4">
-                            <div className="form-group">
-                                <label htmlFor="productId_field">Enter Product ID</label>
-                                <input
-                                    type="text"
-                                    id="email_field"
-                                    className="form-control"
-                                    value={productId}
-                                    onChange={(e) => setProductId(e.target.value)}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="col-12 col-md-2 mt-4 mt-md-0 d-flex justify-content-center">
-                            <button
-                                id="search_button"
-                                className="btn btn-primary mb-5"
-                                onClick={submitHandler}
-                            >
-                                SEARCH
-                            </button>
-                        </div>
-                    </div>
-
-                    {loading ? <Loader /> : (
-                        <>
-                            {reviews && reviews.length > 0 ? (
-                                <Table striped bordered hover responsive className="table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>RATING</th>
-                                            <th>COMMENT</th>
-                                            <th>USER</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        {reviews && reviews.map(review => (
-                                            <tr key={review._id}>
-                                                <td>{review._id}</td>
-                                                <td>{review.rating}</td>
-                                                <td>{review.comment}</td>
-                                                <td>{review.name}</td>
-
-                                                <td>
-                                                    <button
-                                                        className="btn btn-danger py-1 px-2 ml-2"
-                                                        onClick={() => deleteReviewHandler(review._id)}
-                                                    >
-                                                        <i className="fa fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </Table>
-                            ) : (
-                                <h4 className="mt-5 text-center">No Reviews</h4>
-                            )}
-                        </>
-                    )}
-                </>
-            </div>
+            <button
+              id="search_button"
+              type="submit"
+              className="btn btn-primary w-100 py-2"
+            >
+              SEARCH
+            </button>
+          </form>
         </div>
-    </>
-  )
-}
+      </div>
+
+      {data?.reviews?.length > 0 ? (
+        <MDBDataTable
+          data={setReviews()}
+          className="px-3"
+          bordered
+          striped
+          hover
+        />
+      ) : (
+        <p className="mt-5 text-center">No Reviews</p>
+      )}
+    </AdminLayout>
+  );
+};
+
+export default ProductReviews;

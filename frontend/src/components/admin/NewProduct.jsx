@@ -1,235 +1,164 @@
-import { useNavigate } from "react-router-dom";
-import MetaData from "../layout/MetaData";
-import { Sidebar } from "./Sidebar";
+import React, { useEffect, useState } from "react";
+import Loader from "../layout/Loader";
 import { toast } from "react-hot-toast";
 
-import React, { useState } from "react";
-import Loader from "../layout/Loader";
-import { useNewProductMutation } from "../../redux/api/adminApi";
+import MetaData from "../layout/MetaData";
+import AdminLayout from "../layout/AdminLayout";
+import { useNavigate } from "react-router-dom";
+import { PRODUCT_CATEGORIES } from "../../constants/constants";
+import { useCreateProductMutation } from "../../redux/api/productsApi";
 
-export const NewProduct = () => {
-    const navigate = useNavigate();
+const NewProduct = () => {
+  const navigate = useNavigate();
 
-    const [newProduct, { isLoading }] = useNewProductMutation();
+  const [product, setProduct] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    stock: "",
+    seller: "",
+  });
 
-    const [name, setName] = useState('');
-    const [price, setPrice] = useState(0);
-    const [description, setDescription] = useState('');
-    const [category, setCategory] = useState('');
-    const [stock, setStock] = useState(0);
-    const [seller, setSeller] = useState('');
-    const [images, setImages] = useState([]);
-    const [imagesPreview, setImagesPreview] = useState([])
+  const { name, description, price, category, stock, seller } = product;
 
-    const categories = [
-        "Electronics",
-        "Cameras",
-        "Laptops",
-        "Accessories",
-        "Headphones",
-        "Food",
-        "Books",
-        "Clothes/Shoes",
-        "Beauty/Health",
-        "Sports",
-        "Outdoor",
-        "Home",
-    ];
+  const [createProduct, { isLoading, error, isSuccess }] =
+    useCreateProductMutation();
 
-    const submitHandler = (e) => {
-        e.preventDefault();
-      
-        if (!images || images.length === 0) {
-            toast.error('Please upload images', {
-                position: 'bottom-center',
-            });
-          return;
-        }
-      
-        const formData = new FormData();
-        formData.set('name', name);
-        formData.set('price', price);
-        formData.set('description', description);
-        formData.set('category', category);
-        formData.set('stock', stock);
-        formData.set('seller', seller);
-      
-        images.forEach((image) => {
-          formData.append('images', image);
-        });
-      
-        newProduct(formData)
-          .unwrap()
-          .then(() => {
-            toast.success('Product created successfully', {
-              position: 'bottom-center',
-            });
-            navigate('/admin/products');
-          })
-          .catch((error) => {
-            toast.error(error.data.message, {
-              position: 'bottom-center',
-            });
-          });
-      };
-
-    const onChange = (e) => {
-
-        const files = Array.from(e.target.files)
-
-        setImagesPreview([]);
-        setImages([]);
-
-        files.forEach(file => {
-            const reader = new FileReader();
-
-            reader.onload = () => {
-                if(reader.readyState === 2) {
-                    setImagesPreview(oldArray => [...oldArray, reader.result])
-                    setImages(oldArray => [...oldArray, reader.result])
-                }
-            }
-
-            reader.readAsDataURL(file)
-        })
-
+  useEffect(() => {
+    if (error) {
+      toast.error(error?.data?.message);
     }
 
-    if (isLoading) {
-        return <Loader />;
+    if (isSuccess) {
+      toast.success("Product created");
+      navigate("/admin/products");
     }
+  }, [error, isSuccess]);
 
-    return (
-        <>
-            <MetaData title={"New Product"} />
-            <div className="row">
-                <div className="col-12 col-md-2">
-                    <Sidebar />
-                </div>
+  const onChange = (e) => {
+    setProduct({ ...product, [e.target.name]: e.target.value });
+  };
 
-                <div className="col-12 col-md-10">
-                    <>
-                        <div className="wrapper my-5">
-                            <form
-                                className="shadow-lg"
-                                onSubmit={submitHandler}
-                                encType="multipart/form-data"
-                            >
-                                <h1 className="mb-4">New Product</h1>
+  const submitHandler = (e) => {
+    e.preventDefault();
+    createProduct(product);
+  };
 
-                                <div className="form-group">
-                                    <label htmlFor="name_field">Name</label>
-                                    <input
-                                        type="text"
-                                        id="name_field"
-                                        className="form-control"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="price_field">Price</label>
-                                    <input
-                                        type="text"
-                                        id="price_field"
-                                        className="form-control"
-                                        value={price}
-                                        onChange={(e) => setPrice(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="description_field">Description</label>
-                                    <textarea
-                                        className="form-control"
-                                        id="description_field"
-                                        rows="8"
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
-                                    ></textarea>
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="category_field">Category</label>
-                                    <select
-                                        className="form-control"
-                                        id="category_field"
-                                        value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                    >
-                                        {categories.map((category) => (
-                                            <option key={category} value={category}>
-                                                {category}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="stock_field">Stock</label>
-                                    <input
-                                        type="number"
-                                        id="stock_field"
-                                        className="form-control"
-                                        value={stock}
-                                        onChange={(e) => setStock(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label htmlFor="seller_field">Seller Name</label>
-                                    <input
-                                        type="text"
-                                        id="seller_field"
-                                        className="form-control"
-                                        value={seller}
-                                        onChange={(e) => setSeller(e.target.value)}
-                                    />
-                                </div>
-
-                                <div className="form-group">
-                                    <label>Images</label>
-
-                                    <div className="custom-file">
-                                        <input
-                                            type="file"
-                                            name="product_images"
-                                            className="custom-file-input"
-                                            id="customFile"
-                                            onChange={onChange}
-                                            multiple
-                                        />
-                                        <label className="custom-file-label" htmlFor="customFile">
-                                            Choose Images
-                                        </label>
-                                    </div>
-
-                                    {imagesPreview.map((img) => (
-                                        <img
-                                            src={img}
-                                            key={img}
-                                            alt="Images Preview"
-                                            className="mt-3 mr-2"
-                                            width="55"
-                                            height="52"
-                                        />
-                                    ))}
-                                </div>
-
-                                <button
-                                    id="login_button"
-                                    type="submit"
-                                    className="btn btn-block py-3"
-                                    disabled={isLoading}
-                                >
-                                    CREATE
-                                </button>
-                            </form>
-                        </div>
-                    </>
-                </div>
+  return (
+    <AdminLayout>
+      <MetaData title={"Create new Product"} />
+      <div className="row wrapper">
+        <div className="col-10 col-lg-10 mt-5 mt-lg-0">
+          <form className="shadow rounded bg-body" onSubmit={submitHandler}>
+            <h2 className="mb-4">New Product</h2>
+            <div className="mb-3">
+              <label htmlFor="name_field" className="form-label">
+                {" "}
+                Name{" "}
+              </label>
+              <input
+                type="text"
+                id="name_field"
+                className="form-control"
+                name="name"
+                value={name}
+                onChange={onChange}
+              />
             </div>
-        </>
-    );
+
+            <div className="mb-3">
+              <label htmlFor="description_field" className="form-label">
+                Description
+              </label>
+              <textarea
+                className="form-control"
+                id="description_field"
+                rows="8"
+                name="description"
+                value={description}
+                onChange={onChange}
+              ></textarea>
+            </div>
+
+            <div className="row">
+              <div className="mb-3 col">
+                <label htmlFor="price_field" className="form-label">
+                  {" "}
+                  Price{" "}
+                </label>
+                <input
+                  type="text"
+                  id="price_field"
+                  className="form-control"
+                  name="price"
+                  value={price}
+                  onChange={onChange}
+                />
+              </div>
+
+              <div className="mb-3 col">
+                <label htmlFor="stock_field" className="form-label">
+                  {" "}
+                  Stock{" "}
+                </label>
+                <input
+                  type="number"
+                  id="stock_field"
+                  className="form-control"
+                  name="stock"
+                  value={stock}
+                  onChange={onChange}
+                />
+              </div>
+            </div>
+            <div className="row">
+              <div className="mb-3 col">
+                <label htmlFor="category_field" className="form-label">
+                  {" "}
+                  Category{" "}
+                </label>
+                <select
+                  className="form-select"
+                  id="category_field"
+                  name="category"
+                  value={category}
+                  onChange={onChange}
+                >
+                  {PRODUCT_CATEGORIES?.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-3 col">
+                <label htmlFor="seller_field" className="form-label">
+                  {" "}
+                  Seller Name{" "}
+                </label>
+                <input
+                  type="text"
+                  id="seller_field"
+                  className="form-control"
+                  name="seller"
+                  value={seller}
+                  onChange={onChange}
+                />
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="btn w-100 py-2"
+              disabled={isLoading}
+            >
+              {isLoading ? "Creating..." : "CREATE"}
+            </button>
+          </form>
+        </div>
+      </div>
+    </AdminLayout>
+  );
 };
+
+export default NewProduct;

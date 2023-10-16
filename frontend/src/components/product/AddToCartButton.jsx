@@ -14,7 +14,7 @@ const AddToCartButton = ({ product }) => {
             price: product?.price,
             image: product?.images[0]?.url,
             stock: product?.stock,
-            quantity: 1, // set quantity to 1 as default quantity
+            quantity: 1,
         };
 
         dispatch(setCartItem(cartItem));

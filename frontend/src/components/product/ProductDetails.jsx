@@ -4,7 +4,10 @@ import { useGetProductDetailsQuery } from "../../redux/api/productsApi";
 import { toast } from "react-hot-toast";
 import Loader from "../layout/Loader";
 import StarRatings from "react-star-ratings";
+import { useSelector } from "react-redux";
 import MetaData from "../layout/MetaData";
+import NewReview from "../reviews/NewReview";
+import ListReviews from "../reviews/ListReviews";
 import AddToCartButton from "./AddToCartButton";
 
 const ProductDetails = () => {
@@ -17,6 +20,7 @@ const ProductDetails = () => {
     params?.id
   );
   const product = data?.product;
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     setActiveImg(
@@ -26,9 +30,9 @@ const ProductDetails = () => {
     );
   }, [product]);
 
-  useEffect(() => {
+useEffect(() => {
     if (isError) {
-      toast.error(error?.data?.message);
+        toast.error(error?.data?.message);
     }
 }, [isError, error?.data?.message]);
 
@@ -59,11 +63,10 @@ const ProductDetails = () => {
         <div className="col-12 col-lg-5 img-fluid" id="product_image">
           <div className="p-3">
             <img
-              className="d-block w-100"
+              className="d-block w-100 object-fit-contain"
               src={activeImg}
               alt={product?.name}
-              width="340"
-              height="390"
+              height="450"
             />
           </div>
           <div className="row justify-content-start mt-5">
@@ -71,11 +74,11 @@ const ProductDetails = () => {
               <div className="col-2 ms-4 mt-2">
                 <button type="button" className="btn btn-link" role="link">
                   <img
-                    className={`d-block border rounded p-3 cursor-pointer ${
+                    className={`d-block border rounded p-1 cursor-pointer object-fit-contain ${
                       img.url === activeImg ? "border-warning" : ""
-                    } `}
-                    height="100"
-                    width="100"
+                    }`}
+                    height="90"
+                    width="110"
                     src={img?.url}
                     alt={img?.url}
                     onClick={(e) => setActiveImg(img.url)}
@@ -145,11 +148,18 @@ const ProductDetails = () => {
             Sold by: <strong>{product?.seller}</strong>
           </p>
 
-          <div className="alert alert-danger my-5" type="alert">
-            Login to post your review.
-          </div>
+          {isAuthenticated ? (
+            <NewReview productId={product?._id} />
+          ) : (
+            <div className="alert alert-danger my-5" type="alert">
+              Login to post your review.
+            </div>
+          )}
         </div>
       </div>
+      {product?.reviews?.length > 0 && (
+        <ListReviews reviews={product?.reviews} />
+      )}
     </>
   );
 };
