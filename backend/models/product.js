@@ -1,103 +1,92 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Product name is required"],
-    trim: true,
-    maxlength: [100, "Product name cannot exceed 100 characters"]
-  },
-  price: {
-    type: Number,
-    required: [true, "Product price is required"],
-    maxlength: [5, "Product price cannot exceed 5 characters"],
-    default: 0.0
-  },
-  description: {
-    type: String,
-    required: [true, "Product description is required"],
-  },
-  ratings: {
-    type: Number,
-    default: 0
-  },
-  images: [
-    {
-      public_id: {
-        type: String,
-        required: true
+const productSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please enter product name"],
+      maxLength: [200, "Product name cannot exceed 200 characters"],
+    },
+    price: {
+      type: Number,
+      required: [true, "Please enter product price"],
+      maxLength: [5, "Product price cannot exceed 5 digits"],
+    },
+    description: {
+      type: String,
+      required: [true, "Please enter product description"],
+    },
+    ratings: {
+      type: Number,
+      default: 0,
+    },
+    images: [
+      {
+        public_id: {
+          type: String,
+          required: true,
+        },
+        url: {
+          type: String,
+          required: true,
+        },
       },
-      url: {
-        type: String,
-        required: true
+    ],
+    category: {
+      type: String,
+      required: [true, "Please enter product category"],
+      enum: {
+        values: [
+          "Electronics",
+          "Cameras",
+          "Laptops",
+          "Accessories",
+          "Headphones",
+          "Food",
+          "Books",
+          "Sports",
+          "Outdoor",
+          "Home",
+        ],
+        message: "Please select correct category",
       },
-    }
-  ],
-  category: {
-    type: String,
-    required: [true, "Please select category for this product"],
-    enum: {
-      values: [
-        "Electronics",
-        "Cameras",
-        "Laptops",
-        "Accessories",
-        "Headphones",
-        "Food",
-        "Books",
-        "Clothes/Shoes",
-        "Beauty/Health",
-        "Sports",
-        "Outdoor",
-        "Home"
-      ],
-      message: "Please select correct category for product"
-    }
-  },
-  seller: {
-    type: String,
-    required: [true, "Please enter product seller"]
-  },
-  stock: {
-    type: Number,
-    required: [true, "Please enter product stock"],
-    maxlength: [5, "Product name cannot exceed 5 characters"],
-    default: 0
-  },
-  numOfReviews: {
-    type: Number,
-    default: 0
-  },
-  reviews: [
-    {
-      user: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        required: true
+    },
+    seller: {
+      type: String,
+      required: [true, "Please enter product seller"],
+    },
+    stock: {
+      type: Number,
+      required: [true, "Please enter product stock"],
+    },
+    numOfReviews: {
+      type: Number,
+      default: 0,
+    },
+    reviews: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          required: true,
+        },
+        rating: {
+          type: Number,
+          required: true,
+        },
+        comment: {
+          type: String,
+          required: true,
+        },
       },
-      name: {
-        type: String,
-        required: true
-      },
-      rating: {
-        type: Number,
-        required: true
-      },
-      comment: {
-        type: String,
-        required: true
-      }
-    }
-  ],
-  user: {
-    type: mongoose.Schema.ObjectId,
-    ref: "User",
-    required: true
+    ],
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
   },
-    createdAt: {
-      type: Date,
-      default: Date.now
-    }
-})
+  { timestamps: true }
+);
 
 export default mongoose.model("Product", productSchema);
